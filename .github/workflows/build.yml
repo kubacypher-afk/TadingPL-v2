@@ -1,0 +1,44 @@
+name: Fast iOS Build (GitHub Actions)
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  build-simulator:
+    name: 🚀 Szybki Build (Appetize.io)
+    runs-on: macos-14
+    steps:
+      - name: Pobierz kod
+        uses: actions/checkout@v4
+
+      - name: Kompilacja dla Symulatora
+        run: |
+          set -e
+          mkdir -p build/simulator_export
+          
+          xcodebuild \
+            -project APP.xcodeproj \
+            -scheme APP \
+            -configuration Debug \
+            -sdk iphonesimulator \
+            -destination 'generic/platform=iOS Simulator' \
+            -derivedDataPath build/sim_derived \
+            build \
+            COMPILER_INDEX_STORE_ENABLE=NO \
+            DEBUG_INFORMATION_FORMAT=dwarf \
+            CODE_SIGN_IDENTITY="" \
+            CODE_SIGNING_REQUIRED=NO \
+            CODE_SIGNING_ALLOWED=NO
+            
+          cd build/sim_derived/Build/Products/Debug-iphonesimulator
+          zip -r -y -1 ../../../../build/simulator_export/TradingDesk-Simulator.zip APP.app
+          cd ../../../..
+
+      - name: Udostępnij plik ZIP do pobrania
+        uses: actions/upload-artifact@v4
+        with:
+          name: TradingDesk-Simulator
+          path: build/simulator_export/TradingDesk-Simulator.zip
+          retention-days: 7

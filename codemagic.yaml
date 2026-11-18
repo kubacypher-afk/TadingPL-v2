@@ -2,7 +2,7 @@ workflows:
   simulator-quick:
     name: 🚀 Szybki Build Symulator (Appetize.io - ~45s)
     max_build_duration: 15
-    instance_type: mac_mini_m2
+    instance_type: mac_mini_m1
     environment:
       vars:
         XCODE_PROJECT: "APP.xcodeproj"
