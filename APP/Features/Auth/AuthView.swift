@@ -54,38 +54,23 @@ public struct AuthView: View {
     private var logoHeaderSection: some View {
         VStack(spacing: 12) {
             ZStack {
-                Circle()
-                    .fill(
-                        LinearGradient(
-                            colors: [
-                                Theme.neonGreen.opacity(0.22),
-                                Color(red: 0.08, green: 0.10, blue: 0.14)
-                            ],
-                            startPoint: .topLeading,
-                            endPoint: .bottomTrailing
-                        )
+                Image("AppLogo")
+                    .resizable()
+                    .scaledToFill()
+                    .frame(width: 76, height: 76)
+                    .clipShape(Circle())
+                    .overlay(
+                        Circle()
+                            .stroke(Theme.neonGreen.opacity(0.8), lineWidth: 2)
                     )
-                    .frame(width: 72, height: 72)
-                
-                Circle()
-                    .stroke(Theme.neonGreen.opacity(0.6), lineWidth: 1.5)
-                    .frame(width: 72, height: 72)
-                    .shadow(color: Theme.neonGlow, radius: 10)
-                
-                Image(systemName: "chart.line.uptrend.xyaxis")
-                    .font(.system(size: 30, weight: .bold))
-                    .foregroundColor(Theme.neonGreen)
+                    .shadow(color: Theme.neonGlow, radius: 12)
             }
             
-            VStack(spacing: 6) {
-                Text("TRADING DESK")
-                    .font(Typography.ticker(22))
-                    .fontWeight(.heavy)
-                    .foregroundColor(Theme.textPrimary)
-                    .tracking(2.0)
-                
-                GlowingLiveBadge("PRO TERMINAL")
-            }
+            Text("TradingPL")
+                .font(Typography.ticker(26))
+                .fontWeight(.heavy)
+                .foregroundColor(Theme.textPrimary)
+                .tracking(2.0)
         }
         .padding(.bottom, 6)
     }
