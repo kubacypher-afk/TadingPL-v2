@@ -5,8 +5,6 @@ public struct AuthView: View {
     let onAuthSuccess: () -> Void
     
     @Namespace private var modeAnimationNamespace
-    @State private var logoRotating: Bool = false
-    @State private var laserScanOffset: CGFloat = -20
     @State private var isFaceIDScanning: Bool = false
     
     public init(viewModel: AuthViewModel, onAuthSuccess: @escaping () -> Void) {
@@ -23,9 +21,9 @@ public struct AuthView: View {
                     .transition(.opacity.combined(with: .scale(scale: 0.94)))
             } else {
                 ScrollView(showsIndicators: false) {
-                    VStack(spacing: 22) {
-                        hologramLogoSection
-                        slidingModeSelectorSection
+                    VStack(spacing: 24) {
+                        logoHeaderSection
+                        segmentedModeSelector
                         inputFieldsSection
                         
                         if viewModel.mode == .register && !viewModel.password.isEmpty {
@@ -45,7 +43,7 @@ public struct AuthView: View {
                         footerSection
                     }
                     .padding(.horizontal, 24)
-                    .padding(.top, 36)
+                    .padding(.top, 40)
                     .padding(.bottom, 40)
                 }
                 .transition(.opacity)
@@ -53,71 +51,46 @@ public struct AuthView: View {
         }
     }
     
-    private var hologramLogoSection: some View {
-        VStack(spacing: 14) {
+    private var logoHeaderSection: some View {
+        VStack(spacing: 12) {
             ZStack {
-                // Outer slow rotating cyber ring
                 Circle()
-                    .stroke(
-                        AngularGradient(
-                            colors: [Theme.neonGreen, Color.cyan, Color.clear, Theme.neonGreen],
-                            center: .center
-                        ),
-                        lineWidth: 2
-                    )
-                    .frame(width: 84, height: 84)
-                    .rotationEffect(.degrees(logoRotating ? 360 : 0))
-                    .shadow(color: Theme.neonGreen.opacity(0.4), radius: 12)
-                
-                // Translucent core disk
-                Circle()
-                    .fill(.ultraThinMaterial)
-                    .frame(width: 72, height: 72)
-                    .overlay(
-                        Circle().stroke(Color.white.opacity(0.2), lineWidth: 1)
-                    )
-                
-                Image(systemName: "chart.line.uptrend.xyaxis")
-                    .font(.system(size: 30, weight: .black))
-                    .foregroundStyle(
+                    .fill(
                         LinearGradient(
-                            colors: [Color.white, Theme.neonGreen],
-                            startPoint: .top,
-                            endPoint: .bottom
+                            colors: [
+                                Theme.neonGreen.opacity(0.22),
+                                Color(red: 0.08, green: 0.10, blue: 0.14)
+                            ],
+                            startPoint: .topLeading,
+                            endPoint: .bottomTrailing
                         )
                     )
-            }
-            .onAppear {
-                withAnimation(.linear(duration: 8.0).repeatForever(autoreverses: false)) {
-                    logoRotating = true
-                }
+                    .frame(width: 72, height: 72)
+                
+                Circle()
+                    .stroke(Theme.neonGreen.opacity(0.6), lineWidth: 1.5)
+                    .frame(width: 72, height: 72)
+                    .shadow(color: Theme.neonGlow, radius: 10)
+                
+                Image(systemName: "chart.line.uptrend.xyaxis")
+                    .font(.system(size: 30, weight: .bold))
+                    .foregroundColor(Theme.neonGreen)
             }
             
-            VStack(spacing: 4) {
+            VStack(spacing: 6) {
                 Text("TRADING DESK")
-                    .font(Typography.ticker(24))
+                    .font(Typography.ticker(22))
                     .fontWeight(.heavy)
                     .foregroundColor(Theme.textPrimary)
-                    .tracking(2.5)
+                    .tracking(2.0)
                 
-                HStack(spacing: 6) {
-                    Circle()
-                        .fill(Theme.neonGreen)
-                        .frame(width: 6, height: 6)
-                        .shadow(color: Theme.neonGreen, radius: 4)
-                    
-                    Text("PRO HIGH-FREQUENCY TERMINAL")
-                        .font(Typography.caption(10))
-                        .fontWeight(.bold)
-                        .foregroundColor(Theme.neonGreen)
-                        .tracking(1.2)
-                }
+                GlowingLiveBadge("PRO TERMINAL")
             }
         }
         .padding(.bottom, 6)
     }
     
-    private var slidingModeSelectorSection: some View {
+    private var segmentedModeSelector: some View {
         HStack(spacing: 0) {
             ForEach(AuthMode.allCases) { mode in
                 let isSelected = viewModel.mode == mode
@@ -125,22 +98,19 @@ public struct AuthView: View {
                     ZStack {
                         if isSelected {
                             RoundedRectangle(cornerRadius: 12)
-                                .fill(
-                                    LinearGradient(
-                                        colors: [Theme.neonGreen, Theme.neonMint],
-                                        startPoint: .leading,
-                                        endPoint: .trailing
-                                    )
+                                .fill(Theme.neonGreen.opacity(0.2))
+                                .overlay(
+                                    RoundedRectangle(cornerRadius: 12)
+                                        .stroke(Theme.neonGreen.opacity(0.8), lineWidth: 1)
                                 )
                                 .matchedGeometryEffect(id: "authModePill", in: modeAnimationNamespace)
-                                .shadow(color: Theme.neonGreen.opacity(0.35), radius: 8, x: 0, y: 3)
                         }
                         
                         Text(mode.rawValue)
                             .font(Typography.body(14, weight: isSelected ? .bold : .medium))
-                            .foregroundColor(isSelected ? .black : Theme.textSecondary)
+                            .foregroundColor(isSelected ? Theme.neonGreen : Color.white.opacity(0.6))
                             .frame(maxWidth: .infinity)
-                            .frame(height: 44)
+                            .frame(height: 42)
                     }
                 }
                 .buttonStyle(.plain)
@@ -149,11 +119,11 @@ public struct AuthView: View {
         .padding(4)
         .background(
             RoundedRectangle(cornerRadius: 16)
-                .fill(Color(red: 0.08, green: 0.09, blue: 0.12).opacity(0.8))
+                .fill(Color(red: 0.10, green: 0.12, blue: 0.16))
         )
         .overlay(
             RoundedRectangle(cornerRadius: 16)
-                .stroke(Color.white.opacity(0.08), lineWidth: 1)
+                .stroke(Color.white.opacity(0.1), lineWidth: 1)
         )
     }
     
@@ -247,7 +217,7 @@ public struct AuthView: View {
     private func passwordBarColor(for index: Int) -> Color {
         let level = passwordStrengthLevel
         if index >= level {
-            return Color.white.opacity(0.08)
+            return Color.white.opacity(0.1)
         }
         switch level {
         case 1: return Theme.errorRed
@@ -298,8 +268,8 @@ public struct AuthView: View {
     
     private var submitButtonSection: some View {
         NeonButton(
-            viewModel.mode == .login ? "ZALOGUJ DO TERMINALA" : "ZAREJESTRUJ I URUCHOM",
-            icon: viewModel.mode == .login ? "arrow.right.circle.fill" : "bolt.shield.fill",
+            viewModel.mode == .login ? "ZALOGUJ DO TERMINALA" : "ZAREJESTRUJ KONTO",
+            icon: viewModel.mode == .login ? "arrow.right.circle.fill" : "person.badge.plus.fill",
             isLoading: viewModel.isProcessing,
             action: submit
         )
@@ -309,32 +279,23 @@ public struct AuthView: View {
     private var biometricsSection: some View {
         Button(action: triggerFaceIDScan) {
             HStack(spacing: 10) {
-                ZStack {
-                    Image(systemName: "faceid")
-                        .font(.system(size: 20, weight: .semibold))
-                        .foregroundColor(Theme.neonGreen)
-                    
-                    if isFaceIDScanning {
-                        Rectangle()
-                            .fill(Theme.neonGreen)
-                            .frame(width: 24, height: 2)
-                            .offset(y: laserScanOffset)
-                    }
-                }
+                Image(systemName: "faceid")
+                    .font(.system(size: 20, weight: .semibold))
+                    .foregroundColor(Theme.neonGreen)
                 
                 Text(isFaceIDScanning ? "Weryfikacja biometryczna..." : "Zaloguj przez Face ID")
                     .font(Typography.body(13, weight: .semibold))
-                    .foregroundColor(Theme.textSecondary)
+                    .foregroundColor(Color.white.opacity(0.8))
             }
             .frame(maxWidth: .infinity)
-            .frame(height: 46)
+            .frame(height: 48)
             .background(
                 RoundedRectangle(cornerRadius: 14)
-                    .fill(Color.white.opacity(0.04))
+                    .fill(Color(red: 0.10, green: 0.12, blue: 0.16))
             )
             .overlay(
                 RoundedRectangle(cornerRadius: 14)
-                    .stroke(isFaceIDScanning ? Theme.neonGreen.opacity(0.6) : Theme.cardBorder, lineWidth: 1)
+                    .stroke(isFaceIDScanning ? Theme.neonGreen.opacity(0.8) : Color.white.opacity(0.1), lineWidth: 1)
             )
         }
         .buttonStyle(.plain)
@@ -371,13 +332,8 @@ public struct AuthView: View {
         generator.impactOccurred()
         
         isFaceIDScanning = true
-        withAnimation(.easeInOut(duration: 0.5).repeatCount(2, autoreverses: true)) {
-            laserScanOffset = 20
-        }
-        
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.8) {
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) {
             self.isFaceIDScanning = false
-            self.laserScanOffset = -20
             self.viewModel.email = "demo@tradingdesk.io"
             self.viewModel.password = "securepass123"
             self.viewModel.handleLogin(onSuccess: self.onAuthSuccess)

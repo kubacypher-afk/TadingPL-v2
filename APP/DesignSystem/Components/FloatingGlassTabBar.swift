@@ -15,39 +15,41 @@ public struct FloatingGlassTabBar: View {
                 tabButton(for: tab)
             }
         }
-        .padding(.horizontal, 8)
-        .padding(.vertical, 8)
+        .padding(.horizontal, 6)
+        .padding(.vertical, 6)
+        .frame(height: 54)
         .background(
-            // Frosted Glass Material + Cyber Dark Tint
-            ZStack {
-                Capsule()
-                    .fill(.ultraThinMaterial)
-                
-                Capsule()
-                    .fill(Color(red: 0.12, green: 0.13, blue: 0.16).opacity(0.85))
-            }
+            // Dark Frosted Glass Background
+            Capsule()
+                .fill(
+                    LinearGradient(
+                        colors: [
+                            Color(red: 0.14, green: 0.16, blue: 0.20).opacity(0.95),
+                            Color(red: 0.09, green: 0.10, blue: 0.13).opacity(0.98)
+                        ],
+                        startPoint: .top,
+                        endPoint: .bottom
+                    )
+                )
         )
         .overlay(
-            // Specular Glass Rim Lighting
+            // Crisp Specular Glass Rim Highlight (1px)
             Capsule()
                 .stroke(
                     LinearGradient(
                         colors: [
                             Color.white.opacity(0.35),
-                            Color.white.opacity(0.1),
-                            Theme.neonGreen.opacity(0.2),
+                            Color.white.opacity(0.15),
                             Color.white.opacity(0.05)
                         ],
-                        startPoint: .topLeading,
-                        endPoint: .bottomTrailing
+                        startPoint: .top,
+                        endPoint: .bottom
                     ),
-                    lineWidth: 1.2
+                    lineWidth: 1
                 )
         )
-        .shadow(color: Color.black.opacity(0.55), radius: 24, x: 0, y: 12)
-        .shadow(color: Theme.neonGreen.opacity(0.12), radius: 18, x: 0, y: 6)
-        .padding(.horizontal, 24)
-        .padding(.bottom, 12)
+        .shadow(color: Color.black.opacity(0.6), radius: 16, x: 0, y: 8)
+        .shadow(color: Theme.neonGreen.opacity(0.08), radius: 10, x: 0, y: 4)
     }
     
     private func tabButton(for tab: TabItem) -> some View {
@@ -55,91 +57,59 @@ public struct FloatingGlassTabBar: View {
         
         return Button(action: { select(tab) }) {
             ZStack {
-                // Sliding Active Pill Capsule (matching screenshot)
+                // Sliding Active Glass Pill Capsule (matching reference image)
                 if isSelected {
                     Capsule()
                         .fill(
                             LinearGradient(
                                 colors: [
-                                    Color.white.opacity(0.18),
-                                    Color.white.opacity(0.08)
+                                    Color.white.opacity(0.22),
+                                    Color.white.opacity(0.10)
                                 ],
-                                startPoint: .topLeading,
-                                endPoint: .bottomTrailing
+                                startPoint: .top,
+                                endPoint: .bottom
                             )
                         )
                         .overlay(
                             Capsule()
-                                .stroke(Color.white.opacity(0.25), lineWidth: 0.8)
+                                .stroke(Color.white.opacity(0.3), lineWidth: 0.8)
                         )
                         .matchedGeometryEffect(id: "activeTabCapsule", in: tabAnimationNamespace)
-                        .shadow(color: Color.black.opacity(0.3), radius: 6, x: 0, y: 3)
+                        .padding(.horizontal, 4)
+                        .padding(.vertical, 4)
                 }
                 
-                // Content Icon & Badge
-                HStack(spacing: 4) {
-                    if tab == .radar {
-                        // Center highlighted action style (like screenshot's center button)
-                        ZStack {
-                            RoundedRectangle(cornerRadius: 12)
-                                .fill(Color.white)
-                                .frame(width: 38, height: 26)
-                                .overlay(
-                                    RoundedRectangle(cornerRadius: 12)
-                                        .stroke(
-                                            LinearGradient(
-                                                colors: [Color.cyan, Color.pink],
-                                                startPoint: .leading,
-                                                endPoint: .trailing
-                                            ),
-                                            lineWidth: 2
-                                        )
-                                )
-                            
-                            Image(systemName: "plus")
-                                .font(.system(size: 15, weight: .bold))
-                                .foregroundColor(.black)
-                        }
-                    } else {
-                        ZStack(alignment: .topTrailing) {
-                            Image(systemName: tab.iconName)
-                                .font(.system(size: 18, weight: isSelected ? .bold : .medium))
-                                .foregroundColor(isSelected ? .white : Theme.textTertiary)
-                                .scaleEffect(isSelected ? 1.05 : 1.0)
-                            
-                            // Badge pill (e.g. 99+ or LIVE as seen on screenshot)
-                            if tab == .wallet {
-                                Text("PRO")
-                                    .font(.system(size: 8, weight: .black))
-                                    .foregroundColor(.white)
-                                    .padding(.horizontal, 4)
-                                    .padding(.vertical, 1.5)
-                                    .background(Capsule().fill(Theme.neonGreen.opacity(0.9)))
-                                    .foregroundColor(.black)
-                                    .offset(x: 12, y: -8)
-                            } else if tab == .management {
-                                Circle()
-                                    .fill(Theme.neonGreen)
-                                    .frame(width: 6, height: 6)
-                                    .shadow(color: Theme.neonGreen, radius: 4)
-                                    .offset(x: 6, y: -6)
-                            }
-                        }
+                // Icon View
+                if tab == .radar {
+                    // Center RADAR Icon (Radar scanner pulse)
+                    ZStack {
+                        Circle()
+                            .stroke(isSelected ? Theme.neonGreen : Color.white.opacity(0.3), lineWidth: 1.2)
+                            .frame(width: 26, height: 26)
+                        
+                        Image(systemName: "dot.radiowaves.left.and.right")
+                            .font(.system(size: 15, weight: .bold))
+                            .foregroundColor(isSelected ? Theme.neonGreen : Color.white.opacity(0.85))
                     }
+                    .scaleEffect(isSelected ? 1.08 : 1.0)
+                } else {
+                    Image(systemName: tab.iconName)
+                        .font(.system(size: 19, weight: isSelected ? .bold : .medium))
+                        .foregroundColor(isSelected ? .white : Color(white: 0.6))
+                        .scaleEffect(isSelected ? 1.05 : 1.0)
                 }
-                .frame(maxWidth: .infinity)
-                .frame(height: 44)
-                .contentShape(Rectangle())
             }
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
+            .contentShape(Rectangle())
         }
         .buttonStyle(.plain)
     }
     
     private func select(_ tab: TabItem) {
         if selectedTab != tab {
-            let generator = UIImpactFeedbackGenerator(style: .medium)
+            let generator = UIImpactFeedbackGenerator(style: .light)
             generator.impactOccurred()
-            withAnimation(.spring(response: 0.35, dampingFraction: 0.75)) {
+            withAnimation(.spring(response: 0.32, dampingFraction: 0.76)) {
                 selectedTab = tab
             }
         }

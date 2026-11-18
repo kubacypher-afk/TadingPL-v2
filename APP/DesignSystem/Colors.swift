@@ -11,13 +11,13 @@ public enum Theme {
     public static let backgroundDark = Color(red: 0.039, green: 0.047, blue: 0.063) // #0A0C10
     public static let surfaceDark = Color(red: 0.067, green: 0.078, blue: 0.102)    // #11141A
     public static let cardBackground = Color(red: 0.086, green: 0.102, blue: 0.133) // #161A22
-    public static let cardBorder = Color(red: 0.141, green: 0.165, blue: 0.212)     // #242A36
-    public static let cardHighlight = Color(white: 1.0, opacity: 0.04)
+    public static let cardBorder = Color(white: 1.0, opacity: 0.12)
+    public static let cardHighlight = Color(white: 1.0, opacity: 0.06)
     
     // Text and Secondary Accents
     public static let textPrimary = Color.white
-    public static let textSecondary = Color(red: 0.55, green: 0.60, blue: 0.68)
-    public static let textTertiary = Color(red: 0.38, green: 0.42, blue: 0.49)
+    public static let textSecondary = Color(red: 0.65, green: 0.70, blue: 0.78)
+    public static let textTertiary = Color(white: 0.52)
     public static let errorRed = Color(red: 1.0, green: 0.3, blue: 0.35)
     
     // Crypto Accents

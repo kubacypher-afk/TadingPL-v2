@@ -8,7 +8,8 @@ public struct MainTabView: View {
     
     public var body: some View {
         ZStack(alignment: .bottom) {
-            Color.black.ignoresSafeArea()
+            Color(red: 0.05, green: 0.055, blue: 0.07)
+                .ignoresSafeArea()
             
             Group {
                 switch selectedTab {
@@ -26,8 +27,10 @@ public struct MainTabView: View {
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
             
-            // Ultra-thin floating glass island tab bar (matching screenshot)
             FloatingGlassTabBar(selectedTab: $selectedTab)
+                .padding(.horizontal, 24)
+                .padding(.bottom, 14)
         }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
 }
