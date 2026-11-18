@@ -1,6 +1,6 @@
 workflows:
   ios-workflow:
-    name: iOS Build IPA (Trading Desk)
+    name: iOS Build IPA & Simulator (Trading Desk)
     max_build_duration: 60
     instance_type: mac_mini_m2
     environment:
@@ -14,19 +14,42 @@ workflows:
         script: |
           xcodebuild -version
           xcrun --sdk iphoneos --show-sdk-path
-      - name: Build Archive & Generate IPA
+          xcrun --sdk iphonesimulator --show-sdk-path
+      - name: Build Simulator Package for Appetize.io
         script: |
           set -e
+          ROOT_DIR=$(pwd)
+          SIM_DIR="$ROOT_DIR/build/simulator_export"
+          mkdir -p "$SIM_DIR"
           
+          echo "Compiling for iOS Simulator (Appetize.io)..."
+          xcodebuild \
+            -project "$XCODE_PROJECT" \
+            -scheme "$XCODE_SCHEME" \
+            -configuration Release \
+            -sdk iphonesimulator \
+            -destination 'generic/platform=iOS Simulator' \
+            -derivedDataPath build/sim_derived \
+            build \
+            CODE_SIGN_IDENTITY="" \
+            CODE_SIGNING_REQUIRED=NO \
+            CODE_SIGNING_ALLOWED=NO
+            
+          cd build/sim_derived/Build/Products/Release-iphonesimulator
+          zip -r -y "$SIM_DIR/TradingDesk-Simulator.zip" APP.app
+          cd "$ROOT_DIR"
+          
+          echo "Simulator build finished! Created:"
+          ls -la "$SIM_DIR"
+      - name: Build Device Archive & Generate IPA
+        script: |
+          set -e
           ROOT_DIR=$(pwd)
           IPA_DIR="$ROOT_DIR/build/ios/ipa"
           ARCHIVE_PATH="$ROOT_DIR/build/ios/xcarchive/APP.xcarchive"
-          
-          # Clean build folders
-          rm -rf build
           mkdir -p "$IPA_DIR"
           
-          echo "Compiling Xcode project for iOS Device..."
+          echo "Compiling Xcode project for physical iOS Device..."
           xcodebuild \
             -project "$XCODE_PROJECT" \
             -scheme "$XCODE_SCHEME" \
@@ -50,7 +73,8 @@ workflows:
           cd "$ROOT_DIR"
           rm -rf "$TMP_PAYLOAD_DIR"
           
-          echo "Build finished! Generated IPA successfully:"
+          echo "Device IPA finished! Created:"
           ls -la "$IPA_DIR"
     artifacts:
+      - build/simulator_export/*.zip
       - build/ios/ipa/*.ipa

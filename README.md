@@ -24,51 +24,13 @@ Zaawansowana graficznie i technicznie aplikacja tradingowa na system iOS (iPhone
 
 ---
 
-## 🔐 Moduł Autoryzacji (Logowanie i Rejestracja)
+## 📦 Pliki Wynikowe po Kompilacji na Codemagic.io
 
-- **Ekran powitalny:** Przełącznik segmentowy *Logowanie* / *Rejestracja*.
-- **Pola rejestracji:**
-  - Numer telefonu (`+48 ...` z klawiaturą numeryczną)
-  - Adres e-mail
-  - Hasło
-  - Powtórz hasło (weryfikacja zgodności na żywo)
-- **Animacja rejestracji (`RegistrationSuccessView`):**
-  - Rozszerzający się neonowy pierścień i pulsujący checkmark
-  - Komunikat o generowaniu kluczy i szyfrowaniu
-- **Płynne przejście:**
-  - Sprężynowa, szybka animacja przejścia (Spring Morph) do głównego pulpitu aplikacji po zalogowaniu lub ukończeniu rejestracji.
+W zakładce **Artifacts** na Codemagic otrzymasz dwa pliki:
 
----
-
-## 📦 Jak Skompilować do Pliku IPA na Codemagic.io
-
-Projekt posiada gotową konfigurację `codemagic.yaml` oraz schemat Xcode `APP.xcscheme`.
-
-### Krok 1: Wypchnięcie kodu na GitHub / GitLab
-1. Zainicjalizuj repozytorium git w folderze `APP`:
-   ```bash
-   cd c:\Users\kuba\Desktop\TradingPL\APP
-   git init
-   git add .
-   git commit -m "Initial commit of Trading Desk iOS app"
-   ```
-2. Utwórz nowe repozytorium na [GitHub.com](https://github.com) i połącz je:
-   ```bash
-   git remote add origin https://github.com/TWOJA_NAZWA/TradingApp.git
-   git branch -M main
-   git push -u origin main
-   ```
-
-### Krok 2: Konfiguracja na Codemagic.io
-1. Zaloguj się na [Codemagic.io](https://codemagic.io).
-2. Kliknij **Add application** i wybierz swoje repozytorium z GitHub.
-3. Wybierz typ projektu: **iOS App** (Codemagic automatycznie wykryje plik `codemagic.yaml`).
-4. Kliknij **Start new build**.
-
-### Krok 3: Pobranie pliku .IPA
-Po zakończeniu procesu budowania (zazwyczaj 2-4 minuty), w sekcji **Artifacts** pojawi się gotowy plik:
-- `TradingDesk.ipa`
-
-Plik `.ipa` można zainstalować bezpośrednio na iPhone za pomocą:
-- **TrollStore** / **AltStore** / **SideStore** / **Sideloadly**, lub
-- Po podpięciu certyfikatu Apple Developer w Codemagic — dystrybucją przez TestFlight / Ad-Hoc.
+1. **`TradingDesk-Simulator.zip` (Dla Appetize.io / Simulatora w przeglądarce):**
+   - Skompilowany pod architekturę symulatora Apple (`iphonesimulator`).
+   - Wgrywasz go bezpośrednio na [Appetize.io](https://appetize.io) — odpala się w przeglądarce bez żadnych błędów.
+2. **`TradingDesk.ipa` (Dla Prawdziwego iPhone'a):**
+   - Skompilowany pod fizyczne urządzenia (`arm64 iphoneos`).
+   - Do instalacji na telefonie przez TrollStore, AltStore, Sideloadly lub Scarlet.
