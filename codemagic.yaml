@@ -18,10 +18,13 @@ workflows:
         script: |
           set -e
           
+          ROOT_DIR=$(pwd)
+          IPA_DIR="$ROOT_DIR/build/ios/ipa"
+          ARCHIVE_PATH="$ROOT_DIR/build/ios/xcarchive/APP.xcarchive"
+          
           # Clean build folders
           rm -rf build
-          mkdir -p build/ios/ipa
-          mkdir -p build/ios/xcarchive
+          mkdir -p "$IPA_DIR"
           
           echo "Compiling Xcode project for iOS Device..."
           xcodebuild \
@@ -29,20 +32,25 @@ workflows:
             -scheme "$XCODE_SCHEME" \
             -configuration Release \
             -destination 'generic/platform=iOS' \
-            -archivePath build/ios/xcarchive/APP.xcarchive \
+            -archivePath "$ARCHIVE_PATH" \
             archive \
             CODE_SIGN_IDENTITY="" \
             CODE_SIGNING_REQUIRED=NO \
             CODE_SIGNING_ALLOWED=NO
           
           echo "Packaging .app into .ipa payload..."
-          cd build/ios/xcarchive/APP.xcarchive/Products/Applications
-          mkdir -p Payload
-          cp -R APP.app Payload/
-          zip -r -y ../../../../ipa/TradingDesk.ipa Payload
-          cd ../../../..
+          APP_PATH="$ARCHIVE_PATH/Products/Applications/APP.app"
+          TMP_PAYLOAD_DIR="$ROOT_DIR/build/ios/tmp_payload"
+          mkdir -p "$TMP_PAYLOAD_DIR/Payload"
+          cp -R "$APP_PATH" "$TMP_PAYLOAD_DIR/Payload/"
           
-          echo "Build finished! Generated IPA:"
-          ls -la build/ios/ipa
+          cd "$TMP_PAYLOAD_DIR"
+          zip -r -y "$IPA_DIR/TradingDesk.ipa" Payload
+          
+          cd "$ROOT_DIR"
+          rm -rf "$TMP_PAYLOAD_DIR"
+          
+          echo "Build finished! Generated IPA successfully:"
+          ls -la "$IPA_DIR"
     artifacts:
       - build/ios/ipa/*.ipa
