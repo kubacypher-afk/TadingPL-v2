@@ -1,6 +1,7 @@
 import SwiftUI
 import Observation
 import UIKit
+import LocalAuthentication
 
 @Observable
 @MainActor
@@ -12,6 +13,7 @@ public final class AuthViewModel {
     public var confirmPassword: String = ""
     
     public var isProcessing: Bool = false
+    public var isBiometricEvaluating: Bool = false
     public var errorMessage: String?
     public var showRegistrationAnimation: Bool = false
     
@@ -43,7 +45,6 @@ public final class AuthViewModel {
         
         isProcessing = true
         
-        // Fast optimized response time for quick app entry
         Task {
             try? await Task.sleep(nanoseconds: 350_000_000)
             self.isProcessing = false
@@ -77,9 +78,68 @@ public final class AuthViewModel {
             let impact = UINotificationFeedbackGenerator()
             impact.notificationOccurred(.success)
             
-            // Allow animation to complete, then swiftly transition into main app
             try? await Task.sleep(nanoseconds: 1_200_000_000)
             onSuccess()
+        }
+    }
+    
+    public func authenticateWithBiometrics(onSuccess: @escaping () -> Void) {
+        errorMessage = nil
+        let context = LAContext()
+        context.localizedCancelTitle = "Anuluj"
+        var authError: NSError?
+        
+        let reason = "Potwierdź tożsamość Face ID, aby odblokować terminal Trading Desk."
+        
+        if context.canEvaluatePolicy(.deviceOwnerAuthenticationWithBiometrics, error: &authError) {
+            isBiometricEvaluating = true
+            context.evaluatePolicy(.deviceOwnerAuthenticationWithBiometrics, localizedReason: reason) { success, evaluationError in
+                Task { @MainActor in
+                    self.isBiometricEvaluating = false
+                    if success {
+                        let feedback = UINotificationFeedbackGenerator()
+                        feedback.notificationOccurred(.success)
+                        onSuccess()
+                    } else if let error = evaluationError as? LAError {
+                        self.handleBiometricError(error)
+                    }
+                }
+            }
+        } else if context.canEvaluatePolicy(.deviceOwnerAuthentication, error: &authError) {
+            // Fallback to device passcode/system auth
+            isBiometricEvaluating = true
+            context.evaluatePolicy(.deviceOwnerAuthentication, localizedReason: reason) { success, evaluationError in
+                Task { @MainActor in
+                    self.isBiometricEvaluating = false
+                    if success {
+                        let feedback = UINotificationFeedbackGenerator()
+                        feedback.notificationOccurred(.success)
+                        onSuccess()
+                    } else if let error = evaluationError as? LAError, error.code != .userCancel {
+                        self.playErrorFeedback()
+                        self.errorMessage = "Weryfikacja biometryczna nie powiodła się."
+                    }
+                }
+            }
+        } else {
+            playErrorFeedback()
+            errorMessage = "Face ID nie jest aktywne na tym urządzeniu lub w symulatorze. Włącz Face ID w ustawieniach."
+        }
+    }
+    
+    private func handleBiometricError(_ error: LAError) {
+        playErrorFeedback()
+        switch error.code {
+        case .userCancel, .appCancel:
+            break
+        case .biometryNotEnrolled:
+            errorMessage = "Face ID nie zostało jeszcze skonfigurowane na tym urządzeniu."
+        case .biometryLockout:
+            errorMessage = "Face ID zablokowane z powodu zbyt wielu prób. Wpisz hasło."
+        case .authenticationFailed:
+            errorMessage = "Twarz nie została rozpoznana. Spróbuj ponownie."
+        default:
+            errorMessage = "Błąd Face ID: \(error.localizedDescription)"
         }
     }
     

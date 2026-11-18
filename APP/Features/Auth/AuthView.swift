@@ -5,7 +5,7 @@ public struct AuthView: View {
     let onAuthSuccess: () -> Void
     
     @Namespace private var modeAnimationNamespace
-    @State private var isFaceIDScanning: Bool = false
+
     
     public init(viewModel: AuthViewModel, onAuthSuccess: @escaping () -> Void) {
         self.viewModel = viewModel
@@ -279,13 +279,19 @@ public struct AuthView: View {
     private var biometricsSection: some View {
         Button(action: triggerFaceIDScan) {
             HStack(spacing: 10) {
-                Image(systemName: "faceid")
-                    .font(.system(size: 20, weight: .semibold))
-                    .foregroundColor(Theme.neonGreen)
+                if viewModel.isBiometricEvaluating {
+                    ProgressView()
+                        .tint(Theme.neonGreen)
+                        .scaleEffect(0.9)
+                } else {
+                    Image(systemName: "faceid")
+                        .font(.system(size: 20, weight: .semibold))
+                        .foregroundColor(Theme.neonGreen)
+                }
                 
-                Text(isFaceIDScanning ? "Weryfikacja biometryczna..." : "Zaloguj przez Face ID")
+                Text(viewModel.isBiometricEvaluating ? "Skanowanie twarzy Face ID..." : "Zaloguj przez Face ID")
                     .font(Typography.body(13, weight: .semibold))
-                    .foregroundColor(Color.white.opacity(0.8))
+                    .foregroundColor(Color.white.opacity(0.85))
             }
             .frame(maxWidth: .infinity)
             .frame(height: 48)
@@ -295,10 +301,11 @@ public struct AuthView: View {
             )
             .overlay(
                 RoundedRectangle(cornerRadius: 14)
-                    .stroke(isFaceIDScanning ? Theme.neonGreen.opacity(0.8) : Color.white.opacity(0.1), lineWidth: 1)
+                    .stroke(viewModel.isBiometricEvaluating ? Theme.neonGreen.opacity(0.8) : Color.white.opacity(0.1), lineWidth: 1)
             )
         }
         .buttonStyle(.plain)
+        .disabled(viewModel.isBiometricEvaluating)
     }
     
     private var footerSection: some View {
@@ -327,16 +334,8 @@ public struct AuthView: View {
     }
     
     private func triggerFaceIDScan() {
-        guard !isFaceIDScanning else { return }
         let generator = UIImpactFeedbackGenerator(style: .medium)
         generator.impactOccurred()
-        
-        isFaceIDScanning = true
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) {
-            self.isFaceIDScanning = false
-            self.viewModel.email = "demo@tradingdesk.io"
-            self.viewModel.password = "securepass123"
-            self.viewModel.handleLogin(onSuccess: self.onAuthSuccess)
-        }
+        viewModel.authenticateWithBiometrics(onSuccess: onAuthSuccess)
     }
 }
