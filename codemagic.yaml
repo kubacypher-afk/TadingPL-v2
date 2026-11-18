@@ -1,47 +1,56 @@
 workflows:
-  ios-workflow:
-    name: iOS Build IPA & Simulator (Trading Desk)
-    max_build_duration: 60
+  simulator-quick:
+    name: 🚀 Szybki Build Symulator (Appetize.io - ~45s)
+    max_build_duration: 15
     instance_type: mac_mini_m2
     environment:
       vars:
         XCODE_PROJECT: "APP.xcodeproj"
         XCODE_SCHEME: "APP"
-        BUNDLE_ID: "com.tradingpl.app"
       xcode: latest
     scripts:
-      - name: Show Xcode and SDK information
-        script: |
-          xcodebuild -version
-          xcrun --sdk iphoneos --show-sdk-path
-          xcrun --sdk iphonesimulator --show-sdk-path
-      - name: Build Simulator Package for Appetize.io
+      - name: Fast Simulator Compile & Package
         script: |
           set -e
           ROOT_DIR=$(pwd)
           SIM_DIR="$ROOT_DIR/build/simulator_export"
           mkdir -p "$SIM_DIR"
           
-          echo "Compiling for iOS Simulator (Appetize.io)..."
+          echo "Błyskawiczna kompilacja pod symulator (wyłączone zbędne indeksowanie i dSYM)..."
           xcodebuild \
             -project "$XCODE_PROJECT" \
             -scheme "$XCODE_SCHEME" \
-            -configuration Release \
+            -configuration Debug \
             -sdk iphonesimulator \
             -destination 'generic/platform=iOS Simulator' \
             -derivedDataPath build/sim_derived \
             build \
+            COMPILER_INDEX_STORE_ENABLE=NO \
+            DEBUG_INFORMATION_FORMAT=dwarf \
             CODE_SIGN_IDENTITY="" \
             CODE_SIGNING_REQUIRED=NO \
             CODE_SIGNING_ALLOWED=NO
             
-          cd build/sim_derived/Build/Products/Release-iphonesimulator
-          zip -r -y "$SIM_DIR/TradingDesk-Simulator.zip" APP.app
+          cd build/sim_derived/Build/Products/Debug-iphonesimulator
+          zip -r -y -1 "$SIM_DIR/TradingDesk-Simulator.zip" APP.app
           cd "$ROOT_DIR"
           
-          echo "Simulator build finished! Created:"
-          ls -la "$SIM_DIR"
-      - name: Build Device Archive & Generate IPA
+          echo "Gotowe w kilkadziesiąt sekund! Plik:"
+          ls -lh "$SIM_DIR/TradingDesk-Simulator.zip"
+    artifacts:
+      - build/simulator_export/*.zip
+
+  ipa-release:
+    name: 📱 Pełny Build IPA (Prawdziwy iPhone)
+    max_build_duration: 30
+    instance_type: mac_mini_m2
+    environment:
+      vars:
+        XCODE_PROJECT: "APP.xcodeproj"
+        XCODE_SCHEME: "APP"
+      xcode: latest
+    scripts:
+      - name: Build Device IPA
         script: |
           set -e
           ROOT_DIR=$(pwd)
@@ -49,7 +58,6 @@ workflows:
           ARCHIVE_PATH="$ROOT_DIR/build/ios/xcarchive/APP.xcarchive"
           mkdir -p "$IPA_DIR"
           
-          echo "Compiling Xcode project for physical iOS Device..."
           xcodebuild \
             -project "$XCODE_PROJECT" \
             -scheme "$XCODE_SCHEME" \
@@ -57,24 +65,22 @@ workflows:
             -destination 'generic/platform=iOS' \
             -archivePath "$ARCHIVE_PATH" \
             archive \
+            COMPILER_INDEX_STORE_ENABLE=NO \
+            DEBUG_INFORMATION_FORMAT=dwarf \
             CODE_SIGN_IDENTITY="" \
             CODE_SIGNING_REQUIRED=NO \
             CODE_SIGNING_ALLOWED=NO
           
-          echo "Packaging .app into .ipa payload..."
           APP_PATH="$ARCHIVE_PATH/Products/Applications/APP.app"
           TMP_PAYLOAD_DIR="$ROOT_DIR/build/ios/tmp_payload"
           mkdir -p "$TMP_PAYLOAD_DIR/Payload"
           cp -R "$APP_PATH" "$TMP_PAYLOAD_DIR/Payload/"
           
           cd "$TMP_PAYLOAD_DIR"
-          zip -r -y "$IPA_DIR/TradingDesk.ipa" Payload
+          zip -r -y -1 "$IPA_DIR/TradingDesk.ipa" Payload
           
           cd "$ROOT_DIR"
           rm -rf "$TMP_PAYLOAD_DIR"
-          
-          echo "Device IPA finished! Created:"
-          ls -la "$IPA_DIR"
+          ls -lh "$IPA_DIR/TradingDesk.ipa"
     artifacts:
-      - build/simulator_export/*.zip
       - build/ios/ipa/*.ipa
