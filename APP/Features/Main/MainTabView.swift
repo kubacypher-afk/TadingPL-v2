@@ -8,7 +8,7 @@ public struct MainTabView: View {
     
     public var body: some View {
         ZStack(alignment: .bottom) {
-            Theme.backgroundDark.ignoresSafeArea()
+            Color.black.ignoresSafeArea()
             
             Group {
                 switch selectedTab {
@@ -26,7 +26,8 @@ public struct MainTabView: View {
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
             
-            CyberTabBar(selectedTab: $selectedTab)
+            // Ultra-thin floating glass island tab bar (matching screenshot)
+            FloatingGlassTabBar(selectedTab: $selectedTab)
         }
     }
 }

@@ -1,14 +1,17 @@
 import SwiftUI
+import UIKit
 
 public struct ActivityRowView: View {
     public let trade: CryptoTrade
+    @State private var isPressed: Bool = false
+    @State private var isLivePulsing: Bool = false
     
     public init(trade: CryptoTrade) {
         self.trade = trade
     }
     
     public var body: some View {
-        GlassCard(cornerRadius: 18) {
+        Button(action: handleTap) {
             HStack(spacing: 14) {
                 avatarView
                 infoView
@@ -17,21 +20,59 @@ public struct ActivityRowView: View {
             }
             .padding(.horizontal, 16)
             .padding(.vertical, 16)
+            .background(
+                RoundedRectangle(cornerRadius: 20)
+                    .fill(
+                        LinearGradient(
+                            colors: [
+                                Color(red: 0.10, green: 0.12, blue: 0.16).opacity(0.9),
+                                Color(red: 0.07, green: 0.08, blue: 0.11).opacity(0.95)
+                            ],
+                            startPoint: .topLeading,
+                            endPoint: .bottomTrailing
+                        )
+                    )
+            )
+            .overlay(
+                RoundedRectangle(cornerRadius: 20)
+                    .stroke(
+                        LinearGradient(
+                            colors: [
+                                Color.white.opacity(0.18),
+                                Color.white.opacity(0.04),
+                                trade.avatarColor.opacity(0.15)
+                            ],
+                            startPoint: .topLeading,
+                            endPoint: .bottomTrailing
+                        ),
+                        lineWidth: 1
+                    )
+            )
+            .shadow(color: Color.black.opacity(0.4), radius: 10, x: 0, y: 5)
+            .scaleEffect(isPressed ? 0.97 : 1.0)
+            .animation(.spring(response: 0.25, dampingFraction: 0.7), value: isPressed)
+        }
+        .buttonStyle(RowPressableStyle(isPressedBinding: $isPressed))
+        .onAppear {
+            withAnimation(.easeInOut(duration: 1.2).repeatForever(autoreverses: true)) {
+                isLivePulsing = true
+            }
         }
     }
     
     private var avatarView: some View {
         ZStack {
             Circle()
-                .fill(trade.avatarColor.opacity(0.2))
-                .frame(width: 44, height: 44)
+                .fill(trade.avatarColor.opacity(0.22))
+                .frame(width: 46, height: 46)
             
             Circle()
-                .stroke(trade.avatarColor.opacity(0.4), lineWidth: 1)
-                .frame(width: 44, height: 44)
+                .stroke(trade.avatarColor.opacity(0.5), lineWidth: 1.2)
+                .frame(width: 46, height: 46)
+                .shadow(color: trade.avatarColor.opacity(0.3), radius: 8)
             
             Text(trade.avatarLetter)
-                .font(.system(size: 18, weight: .heavy, design: .rounded))
+                .font(.system(size: 20, weight: .heavy, design: .rounded))
                 .foregroundColor(trade.avatarColor)
         }
     }
@@ -60,6 +101,11 @@ public struct ActivityRowView: View {
                 Text("•")
                     .foregroundColor(Theme.textTertiary)
                 
+                Circle()
+                    .fill(Theme.neonGreen)
+                    .frame(width: 5, height: 5)
+                    .shadow(color: Theme.neonGreen, radius: isLivePulsing ? 4 : 1)
+                
                 Text(trade.status)
                     .font(Typography.caption(12, weight: .semibold))
                     .foregroundColor(Theme.neonGreen)
@@ -76,17 +122,40 @@ public struct ActivityRowView: View {
             
             Text(trade.profitPercentage)
                 .font(Typography.ticker(11))
-                .foregroundColor(trade.isPositive ? Theme.neonGreen.opacity(0.8) : Theme.errorRed.opacity(0.8))
+                .foregroundColor(trade.isPositive ? Theme.neonGreen.opacity(0.85) : Theme.errorRed.opacity(0.85))
         }
         .padding(.horizontal, 12)
         .padding(.vertical, 8)
         .background(
             RoundedRectangle(cornerRadius: 12)
-                .fill((trade.isPositive ? Theme.neonGreen : Theme.errorRed).opacity(0.08))
+                .fill((trade.isPositive ? Theme.neonGreen : Theme.errorRed).opacity(0.12))
         )
         .overlay(
             RoundedRectangle(cornerRadius: 12)
-                .stroke((trade.isPositive ? Theme.neonGreen : Theme.errorRed).opacity(0.25), lineWidth: 0.8)
+                .stroke(
+                    (trade.isPositive ? Theme.neonGreen : Theme.errorRed).opacity(0.35),
+                    lineWidth: 1
+                )
         )
+    }
+    
+    private func handleTap() {
+        let generator = UIImpactFeedbackGenerator(style: .light)
+        generator.impactOccurred()
+    }
+}
+
+public struct RowPressableStyle: ButtonStyle {
+    @Binding var isPressedBinding: Bool
+    
+    public init(isPressedBinding: Binding<Bool>) {
+        self._isPressedBinding = isPressedBinding
+    }
+    
+    public func makeBody(configuration: Configuration) -> some View {
+        configuration.label
+            .onChange(of: configuration.isPressed) { _, newValue in
+                isPressedBinding = newValue
+            }
     }
 }

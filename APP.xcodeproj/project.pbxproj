@@ -10,8 +10,10 @@
 		0EC4B5CFAD328E73308914B2 /* AppState.swift in Sources */ = {isa = PBXBuildFile; fileRef = EEBCD4BF2CFB263E0DD60651 /* AppState.swift */; };
 		BB10C5541A936BD0CFDEACFA /* TradingApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A5138E4A088A59B94705873 /* TradingApp.swift */; };
 		8049473A7D54266EACE05F51 /* Colors.swift in Sources */ = {isa = PBXBuildFile; fileRef = 521AB1C5841EAC11617602B2 /* Colors.swift */; };
+		12947192D1F2C9D857656D81 /* AmbientBackground.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2B666F4866B9E4075665D70 /* AmbientBackground.swift */; };
 		18037D33D86DBAEBC80F7C95 /* CyberTabBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5E281D0F7CB1DE962AAC3F6 /* CyberTabBar.swift */; };
 		1DCACFA2BF733DB8CE8C3AF8 /* CyberTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37045647387821F40F3572AD /* CyberTextField.swift */; };
+		049685484381E3CCFAFDA57C /* FloatingGlassTabBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BBD226E331D8EAFDB9DEFB7 /* FloatingGlassTabBar.swift */; };
 		4840D5860454FB8006C11E4D /* GlassCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01F81377A3A59D882B12B910 /* GlassCard.swift */; };
 		79B2A0B7BA88068ECF3D3EDD /* GlowingBadge.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0DCB7BE676B1F6A5F99246BD /* GlowingBadge.swift */; };
 		DB2256783C9EACC77068708C /* LiveOscilloscopeChart.swift in Sources */ = {isa = PBXBuildFile; fileRef = 419B7165AD60D8EB00FE3A3D /* LiveOscilloscopeChart.swift */; };
@@ -42,8 +44,10 @@
 		EEBCD4BF2CFB263E0DD60651 /* AppState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "App/AppState.swift"; sourceTree = "<group>"; };
 		3A5138E4A088A59B94705873 /* TradingApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "App/TradingApp.swift"; sourceTree = "<group>"; };
 		521AB1C5841EAC11617602B2 /* Colors.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DesignSystem/Colors.swift"; sourceTree = "<group>"; };
+		F2B666F4866B9E4075665D70 /* AmbientBackground.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DesignSystem/Components/AmbientBackground.swift"; sourceTree = "<group>"; };
 		D5E281D0F7CB1DE962AAC3F6 /* CyberTabBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DesignSystem/Components/CyberTabBar.swift"; sourceTree = "<group>"; };
 		37045647387821F40F3572AD /* CyberTextField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DesignSystem/Components/CyberTextField.swift"; sourceTree = "<group>"; };
+		6BBD226E331D8EAFDB9DEFB7 /* FloatingGlassTabBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DesignSystem/Components/FloatingGlassTabBar.swift"; sourceTree = "<group>"; };
 		01F81377A3A59D882B12B910 /* GlassCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DesignSystem/Components/GlassCard.swift"; sourceTree = "<group>"; };
 		0DCB7BE676B1F6A5F99246BD /* GlowingBadge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DesignSystem/Components/GlowingBadge.swift"; sourceTree = "<group>"; };
 		419B7165AD60D8EB00FE3A3D /* LiveOscilloscopeChart.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DesignSystem/Components/LiveOscilloscopeChart.swift"; sourceTree = "<group>"; };
@@ -93,8 +97,10 @@
 				EEBCD4BF2CFB263E0DD60651 /* AppState.swift */,
 				3A5138E4A088A59B94705873 /* TradingApp.swift */,
 				521AB1C5841EAC11617602B2 /* Colors.swift */,
+				F2B666F4866B9E4075665D70 /* AmbientBackground.swift */,
 				D5E281D0F7CB1DE962AAC3F6 /* CyberTabBar.swift */,
 				37045647387821F40F3572AD /* CyberTextField.swift */,
+				6BBD226E331D8EAFDB9DEFB7 /* FloatingGlassTabBar.swift */,
 				01F81377A3A59D882B12B910 /* GlassCard.swift */,
 				0DCB7BE676B1F6A5F99246BD /* GlowingBadge.swift */,
 				419B7165AD60D8EB00FE3A3D /* LiveOscilloscopeChart.swift */,
@@ -199,8 +205,10 @@
 				0EC4B5CFAD328E73308914B2 /* AppState.swift in Sources */,
 				BB10C5541A936BD0CFDEACFA /* TradingApp.swift in Sources */,
 				8049473A7D54266EACE05F51 /* Colors.swift in Sources */,
+				12947192D1F2C9D857656D81 /* AmbientBackground.swift in Sources */,
 				18037D33D86DBAEBC80F7C95 /* CyberTabBar.swift in Sources */,
 				1DCACFA2BF733DB8CE8C3AF8 /* CyberTextField.swift in Sources */,
+				049685484381E3CCFAFDA57C /* FloatingGlassTabBar.swift in Sources */,
 				4840D5860454FB8006C11E4D /* GlassCard.swift in Sources */,
 				79B2A0B7BA88068ECF3D3EDD /* GlowingBadge.swift in Sources */,
 				DB2256783C9EACC77068708C /* LiveOscilloscopeChart.swift in Sources */,
