@@ -28,8 +28,8 @@ public struct MainTabView: View {
             .frame(maxWidth: .infinity, maxHeight: .infinity)
             
             FloatingGlassTabBar(selectedTab: $selectedTab)
-                .padding(.horizontal, 24)
-                .padding(.bottom, 14)
+                .padding(.horizontal, 22)
+                .padding(.bottom, 2)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
